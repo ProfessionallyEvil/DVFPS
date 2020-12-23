@@ -1,0 +1,201 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Character/Character.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Levels/test_facility_01/test_facility_01.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Assets/Textures/Prototyping/PNG/Purple/texture_10.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Textures/Prototyping/PNG/Light/texture_07.png" type="Texture" id=4]
+
+[sub_resource type="BoxShape" id=1]
+
+[sub_resource type="PlaneMesh" id=2]
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_texture = ExtResource( 4 )
+uv1_scale = Vector3( 20, 20, 20 )
+
+[sub_resource type="BoxShape" id=4]
+
+[sub_resource type="CubeMesh" id=5]
+
+[sub_resource type="SpatialMaterial" id=6]
+albedo_texture = ExtResource( 3 )
+uv1_scale = Vector3( 6, 4, 1 )
+
+[node name="level" type="Spatial"]
+
+[node name="test_facility_01" parent="." instance=ExtResource( 2 )]
+transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0 )
+
+[node name="Character" parent="." instance=ExtResource( 1 )]
+
+[node name="Floor" type="StaticBody" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Floor"]
+transform = Transform( 100, 0, 0, 0, 0.2, 0, 0, 0, 100, 0, 0, 0 )
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Floor/CollisionShape"]
+mesh = SubResource( 2 )
+material/0 = SubResource( 3 )
+
+[node name="PhysicsBlocks" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 20 )
+
+[node name="Block" type="RigidBody" parent="PhysicsBlocks"]
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block16" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block16"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block16/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block2" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block2"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block2/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block3" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block3"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block3/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block4" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block4"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block4/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block5" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block5"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block5/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block6" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block6"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block6/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block7" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block7"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block7/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block8" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block8"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block8/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block9" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block9"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block9/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block10" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -4, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block10"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block10/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block11" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -4, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block11"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block11/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block12" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -4, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block12"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block12/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block13" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -4, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block13"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block13/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block14" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -4, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block14"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block14/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="Block15" type="RigidBody" parent="PhysicsBlocks"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -4, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PhysicsBlocks/Block15"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block15/CollisionShape"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
