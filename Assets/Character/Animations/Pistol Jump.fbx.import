@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/idle.fbx-0464c8ba35bf35db551b8383081c67cc.scn"
+path="res://.import/Pistol Jump.fbx-8274fd171fb39656e9c89fb1d17afe15.scn"
 
 [deps]
 
-source_file="res://Assets/Character/Animations/idle.fbx"
-dest_files=[ "res://.import/idle.fbx-0464c8ba35bf35db551b8383081c67cc.scn" ]
+source_file="res://Assets/Character/Animations/Pistol Jump.fbx"
+dest_files=[ "res://.import/Pistol Jump.fbx-8274fd171fb39656e9c89fb1d17afe15.scn" ]
 
 [params]
 

@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/jump.fbx-d454e7b4f19319968c2fb575b130a587.scn"
+path="res://.import/Walking Aiming.fbx-5aac845bf39e801b83e274b668caa81d.scn"
 
 [deps]
 
-source_file="res://Assets/Character/Animations/jump.fbx"
-dest_files=[ "res://.import/jump.fbx-d454e7b4f19319968c2fb575b130a587.scn" ]
+source_file="res://Assets/Character/Animations/Walking Aiming.fbx"
+dest_files=[ "res://.import/Walking Aiming.fbx-5aac845bf39e801b83e274b668caa81d.scn" ]
 
 [params]
 

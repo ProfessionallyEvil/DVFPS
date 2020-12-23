@@ -44,5 +44,3 @@ material/0 = SubResource( 4 )
 [node name="Camera" type="Camera" parent="Rotation_Helper"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 2, 0 )
 far = 1000.0
-
-[node name="ClientView" type="Spatial" parent="."]

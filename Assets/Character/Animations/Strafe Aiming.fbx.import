@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/run.fbx-7b8e95633ab6a3c9ec5e11f9f6de8856.scn"
+path="res://.import/Strafe Aiming.fbx-f1382aab87bc2cdd72818c16c2fff082.scn"
 
 [deps]
 
-source_file="res://Assets/Character/Animations/run.fbx"
-dest_files=[ "res://.import/run.fbx-7b8e95633ab6a3c9ec5e11f9f6de8856.scn" ]
+source_file="res://Assets/Character/Animations/Strafe Aiming.fbx"
+dest_files=[ "res://.import/Strafe Aiming.fbx-f1382aab87bc2cdd72818c16c2fff082.scn" ]
 
 [params]
 
