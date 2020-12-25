@@ -1,13 +1,13 @@
 extends KinematicBody
 
-const GRAVITY = -24.8
+export var GRAVITY = -24.8
 var vel = Vector3()
-const MAX_SPEED = 20
-const JUMP_SPEED = 18
-const ACCEL = 4.5
+export var MAX_SPEED = 20
+export var JUMP_SPEED = 18
+export var ACCEL = 4.5
 
-const MAX_SLOW_WALK_SPEED = MAX_SPEED * 0.5
-const SLOW_WALK_ACCEL = ACCEL
+var MAX_SLOW_WALK_SPEED = MAX_SPEED * 0.25
+var SLOW_WALK_ACCEL = ACCEL
 var is_slow_walking = false
 
 var dir = Vector3()

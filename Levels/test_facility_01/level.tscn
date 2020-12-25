@@ -28,6 +28,12 @@ transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0 )
 
 [node name="Character" parent="." instance=ExtResource( 1 )]
 
+[node name="MeshInstance" parent="Character/Rotation_Helper/Gun_Fire_Point" index="0"]
+visible = false
+
+[node name="Raycast_Gun" parent="Character/Rotation_Helper/Gun_Anchor_Point" index="1"]
+raycast_path = NodePath("../../Gun_Fire_Point/RayCast")
+
 [node name="Floor" type="StaticBody" parent="."]
 
 [node name="CollisionShape" type="CollisionShape" parent="Floor"]
@@ -199,3 +205,5 @@ shape = SubResource( 4 )
 [node name="MeshInstance" type="MeshInstance" parent="PhysicsBlocks/Block15/CollisionShape"]
 mesh = SubResource( 5 )
 material/0 = SubResource( 6 )
+
+[editable path="Character"]
