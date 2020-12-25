@@ -3,7 +3,7 @@
 [ext_resource path="res://Weapons/Guns/BaseGun.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Weapons/Models/machinegun.obj" type="ArrayMesh" id=2]
 
-[node name="Raycast_Gun" type="Spatial"]
+[node name="BaseGun" type="Spatial"]
 script = ExtResource( 1 )
 
 [node name="Gun_MeshInstance" type="MeshInstance" parent="."]
