@@ -5,6 +5,8 @@ var vel = Vector3()
 export var MAX_SPEED = 20
 export var JUMP_SPEED = 18
 export var ACCEL = 4.5
+export var MAX_LOOK_ANGLE = 70
+export var AIR_CONTROL = true
 
 var MAX_SLOW_WALK_SPEED = MAX_SPEED * 0.25
 var SLOW_WALK_ACCEL = ACCEL
@@ -109,5 +111,5 @@ func _input(event):
 		self.rotate_y(deg2rad(event.relative.x * MOUSE_SENSITIVITY * -1))
 		
 		var camera_rot = rotation_helper.rotation_degrees
-		camera_rot.x = clamp(camera_rot.x, -70, 70)
+		camera_rot.x = clamp(camera_rot.x, -MAX_LOOK_ANGLE, MAX_LOOK_ANGLE)
 		rotation_helper.rotation_degrees = camera_rot

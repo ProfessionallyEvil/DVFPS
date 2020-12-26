@@ -47,9 +47,11 @@ func _physics_process(delta: float) -> void:
 		# 	can we fire this frame? 
 		# 	Did we hit anything this frame
 		#	etc
+		var first_hit = raycast.get_collider()
+		print('Hitting: ', first_hit)
 
 func process_input(delta: float) -> void:
-	if Input.action_is_pressed("fire"):
+	if Input.is_action_pressed("fire"):
 		shooting = true
 	else:
 		shooting = false
