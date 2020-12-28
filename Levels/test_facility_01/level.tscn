@@ -32,6 +32,9 @@ AIR_CONTROL = false
 [node name="MeshInstance" parent="Character/Rotation_Helper/Gun_Fire_Point" index="0"]
 visible = false
 
+[node name="RayCast" parent="Character/Rotation_Helper/Gun_Fire_Point" index="1"]
+enabled = true
+
 [node name="BaseGun" parent="Character/Rotation_Helper/Gun_Anchor_Point" index="1"]
 player_path = NodePath("../../..")
 raycast_path = NodePath("../../Gun_Fire_Point/RayCast")

@@ -1,5 +1,6 @@
 extends KinematicBody
 
+export var HP = 100.0
 export var GRAVITY = -24.8
 var vel = Vector3()
 export var MAX_SPEED = 20

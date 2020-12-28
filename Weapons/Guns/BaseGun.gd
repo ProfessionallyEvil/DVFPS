@@ -27,28 +27,25 @@ func _ready() -> void:
 	# ---
 	# Scale the raycast Z value
 	raycast = get_node(raycast_path)
-	raycast.cast_to.z *= raycast_range
+	raycast.cast_to *= raycast_range
 
 func _physics_process(delta: float) -> void:
 	process_input(delta)
+	# compute accuracy
+	var movement_penalty = 0.0
+	if has_movement_penalty and player.vel.length() > 0:
+		movement_penalty = min(base_accuracy - 0.1, base_movement_penalty + player.vel.length() / 100)
+	accuracy = base_accuracy - movement_penalty
 	if shooting:
-		# compute accuracy
-		var movement_penalty = 0.0
-		if has_movement_penalty and player.vel.length() > 0:
-			movement_penalty = min(base_accuracy - 0.1, base_movement_penalty + player.vel.length() / 100)
-		accuracy = base_accuracy - movement_penalty
 		print("movement penalty: " + str(movement_penalty))
 		print("accuracy: " + str(accuracy))
-		# accuracy can be factored into computing the spread of each shot
-		# ---
-		# compute spread (ideally we would have spread patterns but random is easier)
-		# ---
-		# fire
-		# 	can we fire this frame? 
-		# 	Did we hit anything this frame
-		#	etc
 		var first_hit = raycast.get_collider()
-		print('Hitting: ', first_hit)
+		var raycast_norm = raycast.get_collision_normal()
+		var hit_position = raycast.get_collision_point()
+		if first_hit:
+			print('Hitting: ', first_hit)
+			if first_hit is RigidBody:
+				first_hit.apply_impulse(hit_position, -raycast_norm * base_damage / 500) # small impulse?
 
 func process_input(delta: float) -> void:
 	if Input.is_action_pressed("fire"):
