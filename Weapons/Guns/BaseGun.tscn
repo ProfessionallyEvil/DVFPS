@@ -1,7 +1,23 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Weapons/Guns/BaseGun.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Weapons/Models/machinegun.obj" type="ArrayMesh" id=2]
+
+[sub_resource type="Animation" id=1]
+resource_name = "BasicRecoil"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/path = NodePath("Gun_MeshInstance:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, -0.129175 ) ]
+}
 
 [node name="BaseGun" type="Spatial"]
 script = ExtResource( 1 )
@@ -53,3 +69,9 @@ material/40 = null
 material/41 = null
 material/42 = null
 material/43 = null
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/BasicRecoil = SubResource( 1 )

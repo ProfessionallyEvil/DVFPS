@@ -1,6 +1,5 @@
 extends Spatial
 
-
 # length of the X component of the raycast direction in "units"
 export var raycast_range = 50.0
 export var base_damage = 75.0
@@ -20,6 +19,7 @@ var accuracy: float
 export var raycast_path: NodePath
 var raycast: RayCast
 
+onready var animation_player = $AnimationPlayer
 var shooting = false
 
 func _ready() -> void:
@@ -37,6 +37,8 @@ func _physics_process(delta: float) -> void:
 		movement_penalty = min(base_accuracy - 0.1, base_movement_penalty + player.vel.length() / 100)
 	accuracy = base_accuracy - movement_penalty
 	if shooting:
+		# trigger the recoil animation
+		animation_player.play("BasicRecoil", -1, 2)
 		print("movement penalty: " + str(movement_penalty))
 		print("accuracy: " + str(accuracy))
 		var first_hit = raycast.get_collider()
