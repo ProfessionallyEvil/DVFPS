@@ -17,8 +17,12 @@ func _ready() -> void:
 	
 	# Connect network signals
 	get_tree().connect("network_peer_connected", self, "_player_connected")
+	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	
 	print("Hello from the server!")
 	
 func _player_connected(id: int) -> void:
 	print("player connected: ", id)
+
+func _player_disconnected(id: int) -> void:
+	print("player disconnected: ", id)
