@@ -211,4 +211,18 @@ shape = SubResource( 4 )
 mesh = SubResource( 5 )
 material/0 = SubResource( 6 )
 
+[node name="SpawnPoints" type="Spatial" parent="."]
+
+[node name="0" type="Position3D" parent="SpawnPoints"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 74 )
+
+[node name="1" type="Position3D" parent="SpawnPoints"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -57, 6, -78 )
+
+[node name="2" type="Position3D" parent="SpawnPoints"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -57, 6, -78 )
+
+[node name="3" type="Position3D" parent="SpawnPoints"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 6, 10 )
+
 [editable path="Character"]
