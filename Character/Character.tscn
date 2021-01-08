@@ -91,6 +91,8 @@ material/0 = null
 
 [node name="BaseGun" parent="Rotation_Helper/Gun_Anchor_Point" instance=ExtResource( 4 )]
 transform = Transform( 1.95857, -0.0305944, 0.403805, -0.0521056, 1.95867, 0.401127, -0.401596, -0.403338, 1.9173, 0, 0, 0 )
+player_path = NodePath("../../..")
+raycast_path = NodePath("../../Gun_Fire_Point/RayCast")
 
 [node name="Camera" type="Camera" parent="Rotation_Helper"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )

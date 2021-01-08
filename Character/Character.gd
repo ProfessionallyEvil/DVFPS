@@ -32,9 +32,61 @@ func _ready():
 func _physics_process(delta):
 	process_input(delta)
 	process_movement(delta)
+
+# hacky code to let the server dictate movement to the character
+# TODO: refactor this to make input processing more decoupled from the input provider
+func net_process_input(input_message: Dictionary, delta: float) -> void:
+		
+	# ---
+	# Walking
+	dir = Vector3()
+	var cam_xform = camera.get_global_transform()
+	
+	var input_movement_vector = Vector2()
+	
+	if Input.is_action_pressed("ui_up"):
+		input_movement_vector.y += 1
+	if Input.is_action_pressed("ui_down"):
+		input_movement_vector.y -= 1
+	if Input.is_action_pressed("ui_left"):
+		input_movement_vector.x -= 1
+	if Input.is_action_pressed("ui_right"):
+		input_movement_vector.x += 1
+	
+	input_movement_vector = input_movement_vector.normalized()
+	
+	# Basis vectors are already normalized
+	dir += -cam_xform.basis.z * input_movement_vector.y
+	dir += cam_xform.basis.x * input_movement_vector.x
+	
+	# ---
+	# slow walking
+	if Input.is_action_pressed("slow_walk"):
+		is_slow_walking = true
+	else:
+		is_slow_walking = false
+	
+	# ---
+	# jumping
+	if is_on_floor():
+		if Input.is_action_just_pressed("jump"):
+			vel.y = JUMP_SPEED
+	
+	# capture / free cursor
+	if Input.is_action_just_pressed("ui_cancel"):
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	
 func process_input(delta):
-	
+	if !get_tree().is_network_server():
+		pass
+#		rpc_id(1, "enqueue_input_method", {
+#			"token": "foo",
+#			"net_id": get_tree().get_network_unique_id(),
+#			"input_data": {}
+#		})
 	# ---
 	# Walking
 	dir = Vector3()
