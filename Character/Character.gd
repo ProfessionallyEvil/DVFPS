@@ -81,7 +81,7 @@ func net_process_input(input_message: Dictionary, delta: float) -> void:
 	
 func process_input(delta):
 	if !get_tree().is_network_server():
-		rpc_id(1, "hello")
+		pass
 #		rpc_id(1, "enqueue_input_method", {
 #			"token": "foo",
 #			"net_id": get_tree().get_network_unique_id(),
@@ -166,9 +166,3 @@ func _input(event):
 		var camera_rot = rotation_helper.rotation_degrees
 		camera_rot.x = clamp(camera_rot.x, -MAX_LOOK_ANGLE, MAX_LOOK_ANGLE)
 		rotation_helper.rotation_degrees = camera_rot
-		
-# -----
-# RPC
-# -----
-remote func hello():
-	print("This was called by client ", get_tree().get_rpc_sender_id())

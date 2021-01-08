@@ -29,16 +29,9 @@ func _connection_failed() -> void:
 func _server_disconnected() -> void:
 	print("Disconnected from server")
 	
-remote func hello(message: String) -> void:
+func hello(message: String) -> void:
 	# check the id of the sender
 	var id = get_tree().get_rpc_sender_id()
 	# TODO work out how to establish cryptographic authenticity of the server pinging back at us
 	# Likely baked in as part of the DTLS implementation in NetworkedMultiplayerENet
 	print(id, " says ", message)
-
-remote func init_game(init_data: Dictionary) -> void:
-	var id = get_tree().get_rpc_sender_id()
-	print(init_data)
-	if id != 1:
-		return
-	get_tree().change_scene(init_data["level_scene_path"])

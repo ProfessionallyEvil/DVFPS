@@ -1,9 +1,12 @@
 extends Node
 
 var config: Dictionary = {}
+export var editor_server: bool = false
+
 var godot_bin_path: String = "../../GodotBins/Godot_v3.2.4-beta4_x11.64"
 func _ready() -> void:
-	if "--server" in OS.get_cmdline_args():
+	config["editor_server"] = editor_server
+	if "--server" in OS.get_cmdline_args() or config.get("editor_server", false):
 		# check for server_config.json and load it if present
 		var config_file: File = File.new()
 		var exists: bool = config_file.file_exists("./server_config.json")

@@ -5,3 +5,6 @@ export_presets.cfg
 
 # node_modules
 **/node_modules/
+
+# engine bins
+/bins
