@@ -23,6 +23,17 @@ func init_level_client_callback_handler(id: int) -> void:
 	# invoke the "init_level_client_callback" RPC on the server from the client
 	rpc_id(1, "init_level_client_callback", id)
 
+remote func push_client_message(message: Dictionary) -> void:
+	var message_type: String = message.get("message_type", null)
+	# print(message)
+	match message_type:
+		"input_action":
+			get_node("/root/Main/InputQueue").push_message(message)
+		_: return
+
+func push_client_message_handler(message: Dictionary) -> void:
+	rpc_id(1, "push_client_message", message)
+
 # -----
 # Client RPC Functions - these will execute on the client
 # These should only be called by the server, a naive protection is to check if
@@ -60,6 +71,9 @@ remote func init_player():
 func create_player():
 	var player_character = load("res://Character/Character.tscn")
 	player_character = player_character.instance()
+	if get_tree().is_network_server():
+		player_character.is_player = false
+		player_character.is_server_character = true
 	player_character.name = str(get_tree().get_network_unique_id())
 	get_tree().get_root().get_node("Main/SceneManager").add_child(player_character)
 

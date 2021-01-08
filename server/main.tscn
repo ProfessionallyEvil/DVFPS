@@ -1,11 +1,14 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://server/main.gd" type="Script" id=1]
 [ext_resource path="res://common/network_interface.tscn" type="PackedScene" id=2]
 [ext_resource path="res://common/scene_manager.tscn" type="PackedScene" id=3]
+[ext_resource path="res://common/input_queue.tscn" type="PackedScene" id=4]
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
+
+[node name="InputQueue" parent="." instance=ExtResource( 4 )]
 
 [node name="NetworkInterface" parent="." instance=ExtResource( 2 )]
 
