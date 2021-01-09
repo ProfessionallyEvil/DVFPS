@@ -37,16 +37,23 @@ func init_level_client_callback_handler(id: int) -> void:
 remote func push_client_message(message: Dictionary) -> void:
 	var message_type: String = message.get("message_type", null)
 	# print(message)
-	match message_type:
-		"input_action":
-			# get_node("/root/Main/InputQueue").push_message(message)
-			# more spaghetti code
-			var main = $"/root/Main"
-			for idx in main.player_info:
-				print("player ", main.player_info[idx]["net_id"])
+	var main: Node = $"/root/Main"
+	var sender_id: int = get_tree().get_rpc_sender_id()
+	if sender_id == int(message["id"]):
+		match message_type:
+			"input_action":
+				# get_node("/root/Main/InputQueue").push_message(message)
+				# more spaghetti code
+				print("player ", main.player_info[sender_id]["net_id"])
 				# pass input to the correct player instance
-				main.player_info[idx]["character_node"].process_client_input_message(message)
-		_: return
+				main.player_info[sender_id]["character_node"].process_client_input_message(message)
+			"mouse_motion":
+				print("player ", main.player_info[sender_id]["net_id"])
+				main.player_info[sender_id]["character_node"].process_rotation(
+					message["relative_x"],
+					message["relative_y"]
+				)
+			_: return
 
 func push_client_message_handler(message: Dictionary) -> void:
 	rpc_id(1, "push_client_message", message)

@@ -21,7 +21,7 @@ const DEACCEL = 16
 const MAX_SLOPE_ANGLE = 40
 
 var camera
-var rotation_helper
+var rotation_helper: Spatial
 
 var MOUSE_SENSITIVITY = 0.05
 
@@ -183,18 +183,35 @@ func process_movement(delta):
 	vel.z = hvel.z
 	vel = move_and_slide(vel, Vector3(0, 1, 0), 0.05, 4, deg2rad(MAX_SLOPE_ANGLE))
 
-func puppet_process_rotation() -> void:
-	pass
+func process_rotation(relative_x: float, relative_y: float) -> void:
+	rotation_helper.rotate_x(deg2rad(relative_y * MOUSE_SENSITIVITY))
+	self.rotate_y(deg2rad(relative_x * MOUSE_SENSITIVITY * -1))
+	
+	var camera_rot: Vector3 = rotation_helper.rotation_degrees
+	camera_rot.x = clamp(camera_rot.x, -MAX_LOOK_ANGLE, MAX_LOOK_ANGLE)
+	rotation_helper.rotation_degrees = camera_rot
 	
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		rotation_helper.rotate_x(deg2rad(event.relative.y * MOUSE_SENSITIVITY))
-		self.rotate_y(deg2rad(event.relative.x * MOUSE_SENSITIVITY * -1))
-		
-		var camera_rot = rotation_helper.rotation_degrees
-		camera_rot.x = clamp(camera_rot.x, -MAX_LOOK_ANGLE, MAX_LOOK_ANGLE)
-		rotation_helper.rotation_degrees = camera_rot
-		
+	if local_player and event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+#		rotation_helper.rotate_x(deg2rad(event.relative.y * MOUSE_SENSITIVITY))
+#		self.rotate_y(deg2rad(event.relative.x * MOUSE_SENSITIVITY * -1))
+#
+#		var camera_rot = rotation_helper.rotation_degrees
+#		camera_rot.x = clamp(camera_rot.x, -MAX_LOOK_ANGLE, MAX_LOOK_ANGLE)
+#		rotation_helper.rotation_degrees = camera_rot
+		# we also need to send mouse details to the server
+		print("sending mouse values to server")
+		var message: Dictionary = {
+			"id": int(self.name),
+			"message_type": "mouse_motion",
+			"relative_x": event.relative.x,
+			"relative_y": event.relative.y
+		}
+		# push the message to the server
+		$"/root/Main/NetworkInterface".push_client_message_handler(message)
+		# update rotation locally
+		self.process_rotation(message["relative_x"], message["relative_y"])
+
 	# use this to push events to the server
 	# This method of polling input also seem pretty janky...
 	# I should probably refactor it into the physics_process 
@@ -206,11 +223,10 @@ func _input(event: InputEvent) -> void:
 		for action in InputMap.get_actions():
 			if InputMap.event_is_action(event, action):
 				var message = {
-					"id": self.name, # possibly not the best way to track who this message belongs to
+					"id": int(self.name), # possibly not the best way to track who this message belongs to
 					"message_type": "input_action",
 					"action": action,
 					"strength": Input.get_action_strength(action),
-					"pressed": Input.is_action_pressed(action),
-					"mouse_motion": null
+					"pressed": Input.is_action_pressed(action)
 				}
 				$"/root/Main/NetworkInterface".push_client_message_handler(message)
