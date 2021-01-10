@@ -30,7 +30,7 @@ func _ready() -> void:
 	raycast.cast_to *= raycast_range
 
 func _physics_process(delta: float) -> void:
-	process_input(delta)
+	#process_input(delta)
 	# compute accuracy
 	var movement_penalty = 0.0
 	if has_movement_penalty and player.vel.length() > 0:
@@ -49,8 +49,5 @@ func _physics_process(delta: float) -> void:
 			if first_hit is RigidBody:
 				first_hit.apply_impulse(hit_position, -raycast_norm * base_damage / 500) # small impulse?
 
-func process_input(delta: float) -> void:
-	if Input.is_action_pressed("fire"):
-		shooting = true
-	else:
-		shooting = false
+func process_action(action_message: Dictionary) -> void:
+	shooting = action_message.get("pressed", false)

@@ -34,21 +34,21 @@ func init_level_client_callback_handler(id: int) -> void:
 	# invoke the "init_level_client_callback" RPC on the server from the client
 	rpc_id(1, "init_level_client_callback", id)
 
-remote func push_client_message(message: Dictionary) -> void:
+remote func process_client_message(message: Dictionary) -> void:
 	var message_type: String = message.get("message_type", null)
 	# print(message)
 	var main: Node = $"/root/Main"
 	var sender_id: int = get_tree().get_rpc_sender_id()
 	if sender_id == int(message["id"]):
 		match message_type:
-			"input_action":
+			"action_list":
 				# get_node("/root/Main/InputQueue").push_message(message)
 				# more spaghetti code
-				print("player ", main.player_info[sender_id]["net_id"])
+				print("player input_action_list ", main.player_info[sender_id]["net_id"], " ", message)
 				# pass input to the correct player instance
-				main.player_info[sender_id]["character_node"].process_client_input_message(message)
+				main.player_info[sender_id]["character_node"].puppet_process_input(message["action_list"])
 			"mouse_motion":
-				print("player ", main.player_info[sender_id]["net_id"])
+				print("player mouse_motion", main.player_info[sender_id]["net_id"], " ", message)
 				main.player_info[sender_id]["character_node"].process_rotation(
 					message["relative_x"],
 					message["relative_y"]
@@ -56,7 +56,7 @@ remote func push_client_message(message: Dictionary) -> void:
 			_: return
 
 func push_client_message_handler(message: Dictionary) -> void:
-	rpc_id(1, "push_client_message", message)
+	rpc_id(1, "process_client_message", message)
 
 # -----
 # Client RPC Functions - these will execute on the client
@@ -66,12 +66,9 @@ func push_client_message_handler(message: Dictionary) -> void:
 remote func init_level(level_data) -> void:
 	# The server will call this function against a given client to tell it
 	# what level to initialize.
-	print("init_level called by ", get_tree().get_rpc_sender_id())
 	if get_tree().get_rpc_sender_id() != 1:
 		return
-	print("init_level called")
 	var id = get_tree().get_rpc_sender_id()
-	print(level_data)
 	var scene_manager: Node = get_node("/root/Main/SceneManager")
 	var new_level: PackedScene = load(level_data["level_scene_path"])
 	get_tree().get_root().get_node("Main/SceneManager").add_child(new_level.instance())
@@ -81,7 +78,6 @@ remote func init_level(level_data) -> void:
 	
 # Server calls this
 func init_level_handler(id: int, level_data: Dictionary) -> void:
-	print("telling the client ", id, " what level to init")
 	rpc_id(id, "init_level", level_data)
 
 func create_player(id: int) -> Character:
@@ -99,7 +95,6 @@ func create_player(id: int) -> Character:
 
 remote func init_player():
 	var sender: int = get_tree().get_rpc_sender_id()
-	print("sender ", sender)
 	if sender != 1:
 		return
 	print("initializing the player!")
