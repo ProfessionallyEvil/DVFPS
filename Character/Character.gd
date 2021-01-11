@@ -10,43 +10,38 @@ export var JUMP_SPEED = 18
 export var ACCEL = 4.5
 export var MAX_LOOK_ANGLE = 70
 export var AIR_CONTROL = true
-
 var MAX_SLOW_WALK_SPEED = MAX_SPEED * 0.25
 var SLOW_WALK_ACCEL = ACCEL
 var is_slow_walking = false
-
 var dir = Vector3()
-
 const DEACCEL = 16
 const MAX_SLOPE_ANGLE = 40
-
 var camera
 var rotation_helper: Spatial
-
 var MOUSE_SENSITIVITY = 0.05
-
 var server_puppet: bool = false
 var local_player: bool = false
-
 var local_input_queue = []
+onready var gun: Spatial = find_node("BaseGun")
+onready var game_state_network_interface: Node = $"/root/Main/GameStateNetworkInterface"
+
+var state: Dictionary
 
 func _ready():
-	#is_server_character = get_tree().is_network_server()
-
-#	if server_puppet:
-#		# connect to the InputQueue - we should ideally check to make sure it exists and error handle, but meh
-#		$"/root/Main/InputQueue".connect("message_pushed", self, "_on_InputQueue_message_pushed")
-
+	# init the state dictionary
+	state = {
+		"id": int(self.name),
+		"hp": HP,
+		"ammo": 50,
+		"origin": transform.origin,
+		"basis": transform.basis
+	}
+	
 	camera = $Rotation_Helper/Camera
 	rotation_helper = $Rotation_Helper
 	
 	if !get_tree().is_network_server():
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-
-func _on_InputQueue_message_pushed(id: int) -> void:
-	# check if the message belongs to this instance of the player using the network id
-	print("Got a message from ", id)
-	var message = $"/root/Main/InputQueue".pop_message()
 
 func _physics_process(delta: float) -> void:
 	#process_input(delta)
@@ -54,8 +49,19 @@ func _physics_process(delta: float) -> void:
 		client_process_input(delta)
 	process_movement(delta)
 
+#func reconcile_with_server(new_state: Dictionary) -> void:
+#	print("RECIEVING NEW_STATE: \n", new_state, "\n", "ID: ", self.name)
+#	HP = new_state["hp"]
+#	transform.origin = new_state["origin"]
+#	transform.basis = new_state["basis"]
+	
+func update_state(new_state: Dictionary) -> void:
+	print("RECIEVING NEW_STATE: \n", new_state, "\n", "ID: ", self.name)
+	HP = new_state["hp"]
+	transform.origin = new_state["origin"]
+	transform.basis = new_state["basis"]
+
 func process_client_input_message(input_message: Dictionary):
-	print("processing input message", input_message)
 	# convert the dictionary into an InputEventAction object
 	var event = InputEventAction.new()
 	event.action = input_message.get("action")
@@ -65,42 +71,39 @@ func process_client_input_message(input_message: Dictionary):
 	self.puppet_process_input(event)
 
 func client_process_input(delta: float) -> void:
-	print("processing local input for main player")
-	# ---
-	# Walking
-	dir = Vector3()
-	var cam_xform = camera.get_global_transform()
-	
-	var input_movement_vector = Vector2()
-	
-	if Input.is_action_pressed("ui_up"):
-		input_movement_vector.y += 1
-	if Input.is_action_pressed("ui_down"):
-		input_movement_vector.y -= 1
-	if Input.is_action_pressed("ui_left"):
-		input_movement_vector.x -= 1
-	if Input.is_action_pressed("ui_right"):
-		input_movement_vector.x += 1
-	
-	input_movement_vector = input_movement_vector.normalized()
-	
-	# Basis vectors are already normalized
-	dir += -cam_xform.basis.z * input_movement_vector.y
-	dir += cam_xform.basis.x * input_movement_vector.x
-	
-	# ---
-	# slow walking
-	if Input.is_action_pressed("slow_walk"):
-		is_slow_walking = true
-	else:
-		is_slow_walking = false
-	
-	# ---
-	# jumping
-	if is_on_floor():
-		#if event.is_action_just_pressed("jump"):
-		if Input.is_action_pressed("jump"):
-			vel.y = JUMP_SPEED
+	# construct an input message from data that is polled from the Input Singleton
+	var action_message_list: Array = []
+	# TODO: should instead define and only use a set of actions that are meanigful to send to the server
+	# rather than iteraing all the defined actions.
+	for action in InputMap.get_actions():
+		#if Input.is_action_pressed(action):
+		var action_message: Dictionary = {
+			"id": int(self.name),
+			"message_type": "input_action",
+			"action": action,
+			"pressed": Input.is_action_pressed(action),
+			"strength": Input.get_action_strength(action),
+			"just_pressed": Input.is_action_just_pressed(action),
+			"just_released": Input.is_action_just_released(action)
+		}
+		action_message_list.push_back(action_message)
+	# -----
+	# Process the action messages now
+	# -----
+	process_actions(action_message_list)
+	# -----
+	# Send the list of inputs from this frame to the server
+	# -----
+#	$"/root/Main/NetworkInterface".push_client_message_handler({
+#		"id": int(self.name),
+#		"message_type": "action_list",
+#		"action_list": action_message_list
+#	})
+	game_state_network_interface.push_state_message({
+		"id": int(self.name),
+		"message_type": "action_list",
+		"action_list": action_message_list
+	})
 	
 	# capture / free cursor
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -108,51 +111,44 @@ func client_process_input(delta: float) -> void:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	
-func puppet_process_input(event: InputEvent):
-	print("calling ", event)
+
+func process_actions(action_message_list: Array) -> void:
 	# ---
 	# Walking
 	dir = Vector3()
 	var cam_xform = camera.get_global_transform()
-	
 	var input_movement_vector = Vector2()
 	
-	if event.is_action_pressed("ui_up"):
-		input_movement_vector.y += 1
-	if event.is_action_pressed("ui_down"):
-		input_movement_vector.y -= 1
-	if event.is_action_pressed("ui_left"):
-		input_movement_vector.x -= 1
-	if event.is_action_pressed("ui_right"):
-		input_movement_vector.x += 1
+	# I'm not sure this is much cleaner than just doing a set of if's...
+	for action_message in action_message_list:
+#		var action_message: Dictionary = action_message_list.pop_back()
+		# Doing it this way generates pretty high network volume, but meh I don't care right now.
+		match action_message:
+			{"action":"ui_up", "pressed":true, ..}:
+				input_movement_vector.y += 1
+			{"action":"ui_down", "pressed":true, ..}:
+				input_movement_vector.y -= 1
+			{"action":"ui_left", "pressed":true, ..}:
+				input_movement_vector.x -= 1
+			{"action":"ui_right", "pressed":true, ..}:
+				input_movement_vector.x += 1
+			{"action":"fire", ..}:
+				gun.process_action(action_message)
+			{"action":"slow_walk", ..}:
+				is_slow_walking = action_message.get("pressed", false)
+			{"action":"jump", "just_pressed":true, ..}:
+				if is_on_floor():
+					vel.y = JUMP_SPEED
 	
 	input_movement_vector = input_movement_vector.normalized()
 	
 	# Basis vectors are already normalized
 	dir += -cam_xform.basis.z * input_movement_vector.y
 	dir += cam_xform.basis.x * input_movement_vector.x
-	
-	# ---
-	# slow walking
-	if event.is_action_pressed("slow_walk"):
-		is_slow_walking = true
-	else:
-		is_slow_walking = false
-	
-	# ---
-	# jumping
-	if is_on_floor():
-		#if event.is_action_just_pressed("jump"):
-		if event.is_action_pressed("jump"):
-			vel.y = JUMP_SPEED
-	
-	# capture / free cursor
-	if Input.is_action_just_pressed("ui_cancel"):
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func puppet_process_input(action_message_list: Array):
+	print("processing action_message in puppet: ", action_message_list)
+	process_actions(action_message_list)
 			
 func process_movement(delta):
 	dir.y = 0
@@ -193,14 +189,6 @@ func process_rotation(relative_x: float, relative_y: float) -> void:
 	
 func _input(event: InputEvent) -> void:
 	if local_player and event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-#		rotation_helper.rotate_x(deg2rad(event.relative.y * MOUSE_SENSITIVITY))
-#		self.rotate_y(deg2rad(event.relative.x * MOUSE_SENSITIVITY * -1))
-#
-#		var camera_rot = rotation_helper.rotation_degrees
-#		camera_rot.x = clamp(camera_rot.x, -MAX_LOOK_ANGLE, MAX_LOOK_ANGLE)
-#		rotation_helper.rotation_degrees = camera_rot
-		# we also need to send mouse details to the server
-		print("sending mouse values to server")
 		var message: Dictionary = {
 			"id": int(self.name),
 			"message_type": "mouse_motion",
@@ -208,25 +196,7 @@ func _input(event: InputEvent) -> void:
 			"relative_y": event.relative.y
 		}
 		# push the message to the server
-		$"/root/Main/NetworkInterface".push_client_message_handler(message)
+#		$"/root/Main/NetworkInterface".push_client_message_handler(message)
+		game_state_network_interface.push_state_message(message)
 		# update rotation locally
 		self.process_rotation(message["relative_x"], message["relative_y"])
-
-	# use this to push events to the server
-	# This method of polling input also seem pretty janky...
-	# I should probably refactor it into the physics_process 
-	# This is terrible spaghetti. You're better than this, Cory >:(
-	if local_player and event.is_action_type():
-		print("sending input action to server")
-		# send the input to the server
-		# and also go ahead and process the input locally
-		for action in InputMap.get_actions():
-			if InputMap.event_is_action(event, action):
-				var message = {
-					"id": int(self.name), # possibly not the best way to track who this message belongs to
-					"message_type": "input_action",
-					"action": action,
-					"strength": Input.get_action_strength(action),
-					"pressed": Input.is_action_pressed(action)
-				}
-				$"/root/Main/NetworkInterface".push_client_message_handler(message)

@@ -30,7 +30,7 @@ func _ready() -> void:
 	raycast.cast_to *= raycast_range
 
 func _physics_process(delta: float) -> void:
-	process_input(delta)
+	#process_input(delta)
 	# compute accuracy
 	var movement_penalty = 0.0
 	if has_movement_penalty and player.vel.length() > 0:
@@ -39,18 +39,15 @@ func _physics_process(delta: float) -> void:
 	if shooting:
 		# trigger the recoil animation
 		animation_player.play("BasicRecoil", -1, 2)
-		print("movement penalty: " + str(movement_penalty))
-		print("accuracy: " + str(accuracy))
+#		print("movement penalty: " + str(movement_penalty))
+#		print("accuracy: " + str(accuracy))
 		var first_hit = raycast.get_collider()
 		var raycast_norm = raycast.get_collision_normal()
 		var hit_position = raycast.get_collision_point()
 		if first_hit:
-			print('Hitting: ', first_hit)
+#			print('Hitting: ', first_hit)
 			if first_hit is RigidBody:
 				first_hit.apply_impulse(hit_position, -raycast_norm * base_damage / 500) # small impulse?
 
-func process_input(delta: float) -> void:
-	if Input.is_action_pressed("fire"):
-		shooting = true
-	else:
-		shooting = false
+func process_action(action_message: Dictionary) -> void:
+	shooting = action_message.get("pressed", false)
