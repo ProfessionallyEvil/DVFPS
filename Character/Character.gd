@@ -23,30 +23,43 @@ var server_puppet: bool = false
 var local_player: bool = false
 var local_input_queue = []
 onready var gun: Spatial = find_node("BaseGun")
+onready var game_state_network_interface: Node = $"/root/Main/GameStateNetworkInterface"
+
+var state: Dictionary
 
 func _ready():
-	#is_server_character = get_tree().is_network_server()
-
-#	if server_puppet:
-#		# connect to the InputQueue - we should ideally check to make sure it exists and error handle, but meh
-#		$"/root/Main/InputQueue".connect("message_pushed", self, "_on_InputQueue_message_pushed")
-
+	# init the state dictionary
+	state = {
+		"id": int(self.name),
+		"hp": HP,
+		"ammo": 50,
+		"origin": transform.origin,
+		"basis": transform.basis
+	}
+	
 	camera = $Rotation_Helper/Camera
 	rotation_helper = $Rotation_Helper
 	
 	if !get_tree().is_network_server():
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-func _on_InputQueue_message_pushed(id: int) -> void:
-	# check if the message belongs to this instance of the player using the network id
-	print("Got a message from ", id)
-	var message = $"/root/Main/InputQueue".pop_message()
-
 func _physics_process(delta: float) -> void:
 	#process_input(delta)
 	if local_player:
 		client_process_input(delta)
 	process_movement(delta)
+
+#func reconcile_with_server(new_state: Dictionary) -> void:
+#	print("RECIEVING NEW_STATE: \n", new_state, "\n", "ID: ", self.name)
+#	HP = new_state["hp"]
+#	transform.origin = new_state["origin"]
+#	transform.basis = new_state["basis"]
+	
+func update_state(new_state: Dictionary) -> void:
+	print("RECIEVING NEW_STATE: \n", new_state, "\n", "ID: ", self.name)
+	HP = new_state["hp"]
+	transform.origin = new_state["origin"]
+	transform.basis = new_state["basis"]
 
 func process_client_input_message(input_message: Dictionary):
 	# convert the dictionary into an InputEventAction object
@@ -81,7 +94,12 @@ func client_process_input(delta: float) -> void:
 	# -----
 	# Send the list of inputs from this frame to the server
 	# -----
-	$"/root/Main/NetworkInterface".push_client_message_handler({
+#	$"/root/Main/NetworkInterface".push_client_message_handler({
+#		"id": int(self.name),
+#		"message_type": "action_list",
+#		"action_list": action_message_list
+#	})
+	game_state_network_interface.push_state_message({
 		"id": int(self.name),
 		"message_type": "action_list",
 		"action_list": action_message_list
@@ -129,7 +147,7 @@ func process_actions(action_message_list: Array) -> void:
 	dir += cam_xform.basis.x * input_movement_vector.x
 
 func puppet_process_input(action_message_list: Array):
-	print("processing action_message: ", action_message_list)
+	print("processing action_message in puppet: ", action_message_list)
 	process_actions(action_message_list)
 			
 func process_movement(delta):
@@ -178,6 +196,7 @@ func _input(event: InputEvent) -> void:
 			"relative_y": event.relative.y
 		}
 		# push the message to the server
-		$"/root/Main/NetworkInterface".push_client_message_handler(message)
+#		$"/root/Main/NetworkInterface".push_client_message_handler(message)
+		game_state_network_interface.push_state_message(message)
 		# update rotation locally
 		self.process_rotation(message["relative_x"], message["relative_y"])

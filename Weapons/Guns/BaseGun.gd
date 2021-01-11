@@ -39,13 +39,13 @@ func _physics_process(delta: float) -> void:
 	if shooting:
 		# trigger the recoil animation
 		animation_player.play("BasicRecoil", -1, 2)
-		print("movement penalty: " + str(movement_penalty))
-		print("accuracy: " + str(accuracy))
+#		print("movement penalty: " + str(movement_penalty))
+#		print("accuracy: " + str(accuracy))
 		var first_hit = raycast.get_collider()
 		var raycast_norm = raycast.get_collision_normal()
 		var hit_position = raycast.get_collision_point()
 		if first_hit:
-			print('Hitting: ', first_hit)
+#			print('Hitting: ', first_hit)
 			if first_hit is RigidBody:
 				first_hit.apply_impulse(hit_position, -raycast_norm * base_damage / 500) # small impulse?
 
