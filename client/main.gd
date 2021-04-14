@@ -8,7 +8,7 @@ func _ready():
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
 	
 	var server_ip: String = Loader.config.get("server_ip", "127.0.0.1")
-	var port: int = int(Loader.config.get("port", 9999))
+	var port: int = int(Loader.config.get("server_port", 9999))
 	print("Connecting to server at ", server_ip, ":", port)
 	# --------------------------------------------------------------------------
 	# Create the network API object and listen for connections

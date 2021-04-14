@@ -4,3 +4,4 @@
 
 [node name="Node" type="Node"]
 script = ExtResource( 1 )
+editor_server = true

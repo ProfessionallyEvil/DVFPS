@@ -15,7 +15,7 @@ func _ready() -> void:
 ###########################
 
 func update_game_state(client_id: int, new_state: Dictionary) -> void:
-	print("RECONCILING STATE WITH CLIENT: ", client_id)
+	#("RECONCILING STATE WITH CLIENT: ", client_id)
 	rpc_id(client_id, "update_game_state", new_state)
 
 # -----
@@ -26,19 +26,22 @@ func update_game_state(client_id: int, new_state: Dictionary) -> void:
 remote func handle_state_message(message: Dictionary) -> void:
 	var message_type: String = message.get("message_type", null)
 	var main: Node = $"/root/Main"
-	var sender_id: int = get_tree().get_rpc_sender_id()
+	#var sender_id: int = get_tree().get_rpc_sender_id()
+	var sender_id: int = int(message["id"]) # ;^)
 	if sender_id == int(message["id"]):
 		match message_type:
 			"action_list":
 				# get_node("/root/Main/InputQueue").push_message(message)
 				# more spaghetti code
-				print("player input_action_list ", main.player_info[sender_id]["client_id"], " ", message)
+				#("player input_action_list ", main.player_info[sender_id]["client_id"], " ", message)
 				# pass input to the correct player instance
 				main.player_info[sender_id]["character_node"].puppet_process_input(message["action_list"])
 			"mouse_motion":
-				print("player mouse_motion", main.player_info[sender_id]["client_id"], " ", message)
+				#("player mouse_motion", main.player_info[sender_id]["client_id"], " ", message)
 				main.player_info[sender_id]["character_node"].process_rotation(
 					message["relative_x"],
 					message["relative_y"]
 				)
+			"health_update":
+				main.player_info[sender_id]["character_node"].puppet_process_input()
 			_: return

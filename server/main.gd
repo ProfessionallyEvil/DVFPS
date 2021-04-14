@@ -83,9 +83,9 @@ func _physics_process(delta: float) -> void:
 	# toss out the updated player state data to each client
 	var new_player_states: Dictionary = {}
 	for pid in player_info:
-		print("updating ", pid)
+		#("updating ", pid)
 		var character_ref: Character = player_info[pid].get("character_node", null)
-		print("CHARACTER REF: ", character_ref)
+		#("CHARACTER REF: ", character_ref)
 		if character_ref:
 			new_player_states[pid] = {
 				"id": player_info[pid]["client_id"],
@@ -93,14 +93,14 @@ func _physics_process(delta: float) -> void:
 				"origin": character_ref.transform.origin,
 				"basis": character_ref.transform.basis
 			}
-			print("updated state ", new_player_states[pid])
+			#("updated state ", new_player_states[pid])
 	# send out the player states
 	var new_game_state: Dictionary = {
 		"match_status": "",
 		"player_states": new_player_states
 	}
 	for client_id in player_info.keys():
-		print("PUSHING NEW STATE TO: ", client_id)
+		#("PUSHING NEW STATE TO: ", client_id)
 		# network_interface.reconcile_with_client(client_id, new_game_state)
 		game_state_network_interface.update_game_state(client_id, new_game_state)
 

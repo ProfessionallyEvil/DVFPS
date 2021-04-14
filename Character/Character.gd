@@ -56,7 +56,7 @@ func _physics_process(delta: float) -> void:
 #	transform.basis = new_state["basis"]
 	
 func update_state(new_state: Dictionary) -> void:
-	print("RECIEVING NEW_STATE: \n", new_state, "\n", "ID: ", self.name)
+	#("RECIEVING NEW_STATE: \n", new_state, "\n", "ID: ", self.name)
 	HP = new_state["hp"]
 	transform.origin = new_state["origin"]
 	transform.basis = new_state["basis"]
@@ -147,7 +147,7 @@ func process_actions(action_message_list: Array) -> void:
 	dir += cam_xform.basis.x * input_movement_vector.x
 
 func puppet_process_input(action_message_list: Array):
-	print("processing action_message in puppet: ", action_message_list)
+	#("processing action_message in puppet: ", action_message_list)
 	process_actions(action_message_list)
 			
 func process_movement(delta):

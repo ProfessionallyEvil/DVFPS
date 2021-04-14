@@ -25,6 +25,7 @@ func broadcast_player_puppets() -> void:
 		var player: Dictionary = main.player_info[idx]
 		for idy in main.player_info: 
 			if idx != idy:
+				print("SENDING CLIENT ID", idx)
 				rpc_id(idy, "create_player", {
 					"client_id": idx,
 					"spawn_point_node_path": "",
